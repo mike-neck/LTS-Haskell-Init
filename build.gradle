@@ -1,12 +1,3 @@
-buildscript {
-    repositories {
-        mavenCentral()
-    }
-    dependencies {
-        classpath 'org.jsoup:jsoup:1.8.2'
-    }
-}
-
 apply plugin: 'lts-haskell'
 
 /*
@@ -28,4 +19,3 @@ model {
     }
 }
 */
-

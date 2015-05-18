@@ -1,0 +1,28 @@
+apply plugin: 'idea'
+apply plugin: 'groovy'
+
+ext {
+    jdkLevel = 1.8
+    encoding = 'UTF-8'
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile gradleApi()
+    compile 'org.jsoup:jsoup:1.8.2'
+}
+
+tasks.withType(JavaCompile).each {
+    it.sourceCompatibility = jdkLevel
+    it.targetCompatibility = jdkLevel
+    it.options.encoding = encoding
+}
+
+idea {
+    project {
+        languageLevel = jdkLevel
+    }
+}
