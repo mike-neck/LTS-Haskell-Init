@@ -1,0 +1,8 @@
+LTS-Haskell-Init is a gradle tasks for set up LTS Haskell template.
+
+This software includes software(Jsoup) from http://jsoup.org/ to parse html text
+from https://www.stackage.org/. You can see the license term at
+http://jsoup.org/license.
+
+This software includes software(gradle) from https://gradle.org to execute some
+tasks. You can see the license term at https://gradle.org/license/.

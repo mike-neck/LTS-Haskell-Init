@@ -1,0 +1,31 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'org.jsoup:jsoup:1.8.2'
+    }
+}
+
+apply plugin: 'lts-haskell'
+
+/*
+If you want to modify LTS Haskell template direcotry, remove this comment out
+and configure directory name.
+In this sample you can initialize sandbox with LTS Haskell version(as you like)
+at directory 'path/to/lts/haskell/version', and install 'happy' 'ghc-mod'
+package in it.
+
+model {
+    ltsHaskell {
+        dir 'path/to/lts/haskell'
+        cabal.create {
+            install = 'happy'
+        }
+        cabal.create {
+            install = 'ghc-mod'
+        }
+    }
+}
+*/
+
