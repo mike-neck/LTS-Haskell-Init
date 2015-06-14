@@ -33,7 +33,7 @@ class LtsHaskell extends RuleSource {
 
     static final String STACKAGE_URL = 'https://www.stackage.org/snapshots'
 
-    static final String STACKAGE_SNAPSHOTS_URL = 'https://www.stackage.org/snapshot/lts-'
+    static final String STACKAGE_SNAPSHOTS_URL = 'https://www.stackage.org/lts-'
 
     static final String CABAL_CONFIG = 'cabal.config'
 
@@ -52,8 +52,12 @@ class LtsHaskell extends RuleSource {
         "${LTS_HASKELL} (latest: ${latest})"
     }
 
-    static final def DESCRIPTION = {String version ->
+    static final def WITH_INSTALL_DESCRIPTION = {String version ->
         "Download ${LTS_HASKELL} ${version} configuration and run cabal sandbox init, cabal install."
+    }
+
+    static final def NON_INSTALL_DESCRIPTION = {String version ->
+        "Download ${LTS_HASKELL} ${version} configuration and run cabal sandbox init."
     }
 
     @Model
@@ -112,34 +116,41 @@ mkdir -p ${base.dir}
                 }
             }
             // download config
-            def dl = TASK_NAME('download', v)
-            tasks.create(dl) {
+            def download = TASK_NAME('download', v)
+            tasks.create(download) {
                 def conf = new File("${dir}/${v}/${CABAL_CONFIG}")
                 dependsOn mkDir
                 doLast {
                     conf.write(new URL(CONFIG_URL(v)).text)
                 }
             }
+            // cabal update
+            def update = TASK_NAME('cabalUpdate', v)
+            tasks.create(update, Exec) {
+                dependsOn download
+                workingDir "${dir}/${v}"
+                commandLine 'cabal', 'update'
+            }
             // cabal sandbox init
             def sandbox = TASK_NAME('cabalSandboxInit', v)
             tasks.create(sandbox, Exec) {
-                dependsOn dl
+                dependsOn update
                 workingDir "${dir}/${v}"
                 commandLine 'cabal', 'sandbox', 'init'
             }
             // cabal install
             def cabal = TASK_NAME('ltsHaskellSetup', v)
-            if (base.cabal.size() > 0) {
+            if (base.cabal.size() == 0) {
                 tasks.create(cabal) {
                     dependsOn sandbox
                     group = GROUP(latest)
-                    description = DESCRIPTION(v)
+                    description = NON_INSTALL_DESCRIPTION(v)
                 }
             } else {
                 tasks.create(cabal, Exec) {
                     dependsOn sandbox
                     group = GROUP(latest)
-                    description = DESCRIPTION(v)
+                    description = WITH_INSTALL_DESCRIPTION(v)
                     workingDir "${dir}/${v}"
                     def commands = ['cabal', 'install'] + base.cabal.collect {it.install}
                     commandLine commands
